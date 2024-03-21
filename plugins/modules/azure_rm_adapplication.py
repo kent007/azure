@@ -146,9 +146,9 @@ options:
     optional_claims:
         description:
             - Declare the optional claims for the application.
-        type: complex
+        type: dict
         suboptions:
-            access_token:
+            access_token_claims :
                 description:
                     - The optional claims returned in the JWT access token
                 type: list
@@ -164,23 +164,21 @@ options:
                             - The source (directory object) of the claim.
                             - There are predefined claims and user-defined claims from extension properties.
                             - If the source value is null, the claim is a predefined optional claim.
-                            - If the source value is user, the value in the name property is the extension property 
-                            from the user object.
+                            - If the source value is user, the value in the name property is the extension property from the user object.
                         type: str
                     essential:
                         description:
-                            - If the value is true, the claim specified by the client is necessary to ensure a 
-                            smooth authorization experience for the specific task requested by the end user.
+                            - If the value is true, the claim specified by the client is necessary to ensure a smooth authorization experience\
+                               for the specific task requested by the end user.
                             - The default value is false.
                         default: false
                         type: bool
                     additional_properties:
                         description:
                             - Additional properties of the claim.
-                            - If a property exists in this collection, it modifies the behavior of the optional claim 
-                            specified in the name property.
+                            - If a property exists in this collection, it modifies the behavior of the optional claim specified in the name property.
                         type: str
-            id_token:
+            id_token_claims:
                 description:
                     - The optional claims returned in the JWT ID token
                 type: list
@@ -196,23 +194,21 @@ options:
                             - The source (directory object) of the claim.
                             - There are predefined claims and user-defined claims from extension properties.
                             - If the source value is null, the claim is a predefined optional claim.
-                            - If the source value is user, the value in the name property is the extension property 
-                            from the user object.
+                            - If the source value is user, the value in the name property is the extension property from the user object.
                         type: str
                     essential:
                         description:
-                            - If the value is true, the claim specified by the client is necessary to ensure a 
-                            smooth authorization experience for the specific task requested by the end user.
+                            - If the value is true, the claim specified by the client is necessary to ensure a smooth authorization experience\
+                               for the specific task requested by the end user.
                             - The default value is false.
                         default: false
                         type: bool
                     additional_properties:
                         description:
                             - Additional properties of the claim.
-                            - If a property exists in this collection, it modifies the behavior of the optional 
-                            claim specified in the name property.
+                            - If a property exists in this collection, it modifies the behavior of the optional claim specified in the name property.
                         type: str
-            saml2_token:
+            saml2_token_claims:
                 description:
                     - The optional claims returned in the SAML token
                 type: list
@@ -228,29 +224,46 @@ options:
                             - The source (directory object) of the claim.
                             - There are predefined claims and user-defined claims from extension properties.
                             - If the source value is null, the claim is a predefined optional claim.
-                            - If the source value is user, the value in the name property is the extension property 
-                            from the user object.
+                            - If the source value is user, the value in the name property is the extension property rom the user object.
                         type: str
                     essential:
                         description:
-                            - If the value is true, the claim specified by the client is necessary to ensure a smooth 
-                            authorization experience for the specific task requested by the end user.
+                            - If the value is true, the claim specified by the client is necessary to ensure a smooth authorization experience\
+                               for the specific task requested by the end user.
                             - The default value is false.
                         default: false
                         type: bool
                     additional_properties:
                         description:
                             - Additional properties of the claim.
-                            - If a property exists in this collection, it modifies the behavior of the optional 
-                            claim specified in the name property.
+                            - If a property exists in this collection, it modifies the behavior of the optional claim specified in the name property.
                         type: str
     password:
         description:
             - App password, aka 'client secret'.
         type: str
 
-    reply_urls:
+    web_reply_urls:
         description:
+            - The web redirect urls.
+            - Space-separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request.
+            - The value does not need to be a physical endpoint, but must be a valid URI.
+        type: list
+        elements: str
+        aliases:
+            - reply_urls
+
+    spa_reply_urls:
+        description:
+            - The spa redirect urls.
+            - Space-separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request.
+            - The value does not need to be a physical endpoint, but must be a valid URI.
+        type: list
+        elements: str
+
+    public_client_reply_urls:
+        description:
+            - The public client redirect urls.
             - Space-separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request.
             - The value does not need to be a physical endpoint, but must be a valid URI.
         type: list
@@ -316,6 +329,18 @@ EXAMPLES = '''
 - name: Create ad application
   azure_rm_adapplication:
     display_name: "{{ display_name }}"
+
+- name: Create ad application with multi redirect urls
+  azure_rm_adapplication:
+    display_name: "{{ display_name }}"
+    web_reply_urls:
+      - https://web01.com
+    spa_reply_urls:
+      - https://spa01.com
+      - https://spa02.com
+    public_client_reply_urls:
+      - https://public01.com
+      - https://public02.com
 
 - name: Create application with more parameter
   azure_rm_adapplication:
@@ -387,8 +412,23 @@ optional_claims:
     returned: always
     type: list
     sample: []
-reply_urls:
+public_client_reply_urls:
     description:
+        - The public client redirect urls.
+        - Space-separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request.
+    returned: always
+    type: list
+    sample: []
+web_reply_urls:
+    description:
+        - The web redirect urls.
+        - Space-separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request.
+    returned: always
+    type: list
+    sample: []
+spa_reply_urls:
+    description:
+        - The spa redirect urls.
         - Space-separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request.
     returned: always
     type: list
@@ -411,6 +451,8 @@ try:
     from msgraph.generated.models.resource_access import ResourceAccess
     from msgraph.generated.models.app_role import AppRole
     from msgraph.generated.models.web_application import WebApplication
+    from msgraph.generated.models.spa_application import SpaApplication
+    from msgraph.generated.models.public_client_application import PublicClientApplication
     from msgraph.generated.models.implicit_grant_settings import ImplicitGrantSettings
     from msgraph.generated.models.optional_claim import OptionalClaim
     from msgraph.generated.models.optional_claims import OptionalClaims
@@ -453,13 +495,6 @@ claims_spec = dict(
     additional_properties=dict(
         type='str'
     )
-)
-
-optional_claims_spec = dict(
-    access_token=dict(type='list', elements='dict', options=claims_spec),
-    id_token=dict(type='list', elements='dict', options=claims_spec),
-    saml2_token=dict(type='list', elements='dict', options=claims_spec),
-    type=dict
 )
 
 required_resource_accesses_spec = dict(
@@ -508,9 +543,18 @@ class AzureRMADApplication(AzureRMModuleBaseExt):
             key_value=dict(type='str', no_log=True),
             native_app=dict(type='bool'),
             oauth2_allow_implicit_flow=dict(type='bool'),
-            optional_claims=optional_claims_spec,
+            optional_claims=dict(
+                type='dict',
+                options=dict(
+                    access_token_claims=dict(type='list', elements='dict', no_log=True, options=claims_spec),
+                    id_token_claims=dict(type='list', elements='dict', no_log=True, options=claims_spec),
+                    saml2_token_claims=dict(type='list', elements='dict', no_log=True, options=claims_spec),
+                )
+            ),
             password=dict(type='str', no_log=True),
-            reply_urls=dict(type='list', elements='str'),
+            public_client_reply_urls=dict(type='list', elements='str'),
+            web_reply_urls=dict(type='list', elements='str', aliases=['reply_urls']),
+            spa_reply_urls=dict(type='list', elements='str'),
             start_date=dict(type='str'),
             required_resource_accesses=dict(type='list', elements='dict', options=required_resource_accesses_spec),
             state=dict(type='str', default='present', choices=['present', 'absent']),
@@ -532,7 +576,9 @@ class AzureRMADApplication(AzureRMModuleBaseExt):
         self.oauth2_allow_implicit_flow = None
         self.optional_claims = None
         self.password = None
-        self.reply_urls = None
+        self.public_client_reply_urls = None
+        self.spa_reply_urls = None
+        self.web_reply_urls = None
         self.start_date = None
         self.required_resource_accesses = None
         self.allow_guests_sign_in = None
@@ -589,11 +635,13 @@ class AzureRMADApplication(AzureRMModuleBaseExt):
                 sign_in_audience=self.sign_in_audience,
                 web=WebApplication(
                     home_page_url=self.homepage,
-                    redirect_uris=self.reply_urls,
+                    redirect_uris=self.web_reply_urls,
                     implicit_grant_settings=ImplicitGrantSettings(
                         enable_access_token_issuance=self.oauth2_allow_implicit_flow,
                     ),
                 ),
+                spa=SpaApplication(redirect_uris=self.spa_reply_urls),
+                public_client=PublicClientApplication(redirect_uris=self.public_client_reply_urls),
                 display_name=self.display_name,
                 identifier_uris=self.identifier_uris,
                 key_credentials=key_creds,
@@ -634,11 +682,13 @@ class AzureRMADApplication(AzureRMModuleBaseExt):
                 sign_in_audience=self.sign_in_audience,
                 web=WebApplication(
                     home_page_url=self.homepage,
-                    redirect_uris=self.reply_urls,
+                    redirect_uris=self.web_reply_urls,
                     implicit_grant_settings=ImplicitGrantSettings(
                         enable_access_token_issuance=self.oauth2_allow_implicit_flow,
                     ),
                 ),
+                spa=SpaApplication(redirect_uris=self.spa_reply_urls),
+                public_client=PublicClientApplication(redirect_uris=self.public_client_reply_urls),
                 display_name=self.display_name,
                 identifier_uris=self.identifier_uris,
                 key_credentials=key_creds,
@@ -724,7 +774,9 @@ class AzureRMADApplication(AzureRMModuleBaseExt):
             oauth2_allow_implicit_flow=object.web.implicit_grant_settings.enable_access_token_issuance,
             optional_claims=optional_claims,
             # allow_guests_sign_in=object.allow_guests_sign_in,
-            reply_urls=object.web.redirect_uris
+            web_reply_urls=object.web.redirect_uris,
+            spa_reply_urls=object.spa.redirect_uris,
+            public_client_reply_urls=object.public_client.redirect_uris
         )
 
     def build_application_creds(self, password=None, key_value=None, key_type=None, key_usage=None,
