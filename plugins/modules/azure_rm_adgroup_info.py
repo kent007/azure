@@ -57,8 +57,8 @@ options:
         type: bool
     raw_membership:
         description:
-            - By default the group_members return property is flattened and partially filtered of non-User objects
-              before return. This argument disables those transformations.
+            - By default the group_members return property is flattened and partially filtered of non-User objects before return.\
+              This argument disables those transformations.
         default: false
         type: bool
     all:
@@ -80,11 +80,6 @@ EXAMPLES = '''
   azure_rm_adgroup_info:
     object_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
-- name: Return a specific group using object_id and include service principals
-  azure_rm_adgroup_info:
-    object_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    include_service_principals: true
-
 - name: Return a specific group using object_id and  return the owners of the group
   azure_rm_adgroup_info:
     object_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -95,9 +90,7 @@ EXAMPLES = '''
     object_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     return_owners: true
     return_group_members: true
-    
-- name: Return a specific group using object_id and return the owners and members of the group. Specify the
-return should be unfiltered
+- name: Return a specific group using object_id and return the owners and members of the group. Return service principals and nested groups.
   azure_rm_adgroup_info:
     object_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     return_owners: true
@@ -172,8 +165,7 @@ group_owners:
     type: list
 group_members:
     description:
-        - The members of the group. If raw_membership is set, this field may contain non-user objects 
-          (groups, service principals, etc)
+        - The members of the group. If raw_membership is set, this field may contain non-user objects (groups, service principals, etc)
     returned: always
     type: list
 description:
